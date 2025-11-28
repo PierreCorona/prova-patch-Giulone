@@ -340,7 +340,7 @@ function makeMIDIKeyboard(device) {
 
 
 
-// === HAND TRACKING → CONTROLLO PARAMETRI RNBO ===
+// !!! HAND TRACKING: CONTROLLO PARAMETRI RNBO ===
 
 // Variabili globali
 let hands;
@@ -362,7 +362,7 @@ function enableHandTracking(device) {
     const canvasElement = document.getElementById("hand-canvas");
     const canvasCtx = canvasElement.getContext("2d");
 
-    // === FIX IMPORTANTE: imposta dimensioni interne del canvas ===
+    //imposto dimensioni "interne" del canvas 
     function resizeCanvas() {
         canvasElement.width  = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
@@ -425,7 +425,7 @@ function enableHandTracking(device) {
     });
 
     camera.start().then(() => {
-        // Quando il video è pronto → ridimensiona davvero il canvas
+        // ridimensiono il canvas
         videoElement.addEventListener('loadedmetadata', resizeCanvas);
         videoElement.addEventListener('resize', resizeCanvas);
     });
