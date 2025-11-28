@@ -298,7 +298,7 @@ function makeMIDIKeyboard(device) {
         const label = document.createElement("p");
         label.textContent = note;
         key.appendChild(label);
-        key.addEventListener("pointerdown", () => {
+        /*key.addEventListener("pointerdown", () => {
             let midiChannel = 0;
 
             // Format a MIDI message paylaod, this constructs a MIDI on event
@@ -329,7 +329,38 @@ function makeMIDIKeyboard(device) {
             device.scheduleEvent(noteOffEvent);
 
             key.classList.add("clicked");
-        });
+        });*/
+
+        key.addEventListener("pointerdown", () => {
+       let midiChannel = 0;
+       const note = parseInt(label.textContent); // numero della nota
+       const noteVelocity = 100;
+       const noteDurationMs = 250;
+
+       // Se il loop è già attivo lo fermo ricliccandoci
+       if (key.loopInterval) {
+        clearInterval(key.loopInterval);
+        key.loopInterval = null;
+        key.classList.remove("clicked");
+        return;
+     }
+
+    // Funzione che manda un ciclo note on/off
+    function playNote() {
+        let now = device.context.currentTime * 1000;
+
+        let noteOnEvent = new RNBO.MIDIEvent(now, 0, [144 + midiChannel, note, noteVelocity]);
+        let noteOffEvent = new RNBO.MIDIEvent(now + noteDurationMs, 0, [128 + midiChannel, note, 0]);
+
+        device.scheduleEvent(noteOnEvent);
+        device.scheduleEvent(noteOffEvent);
+    }
+
+    // Avvia loop
+    key.loopInterval = setInterval(playNote, noteDurationMs);
+    key.classList.add("clicked");
+});
+
 
         key.addEventListener("pointerup", () => key.classList.remove("clicked"));
 
@@ -340,7 +371,7 @@ function makeMIDIKeyboard(device) {
 
 
 
-// === HAND TRACKING → CONTROLLO PARAMETRI RNBO ===
+// !!! HAND TRACKING: CONTROLLO PARAMETRI RNBO !!!===
 
 // Variabili globali
 let hands;
@@ -362,7 +393,7 @@ function enableHandTracking(device) {
     const canvasElement = document.getElementById("hand-canvas");
     const canvasCtx = canvasElement.getContext("2d");
 
-    // === FIX IMPORTANTE: imposta dimensioni interne del canvas ===
+    //imposta dimensioni interne del canvas ===
     function resizeCanvas() {
         canvasElement.width  = videoElement.videoWidth;
         canvasElement.height = videoElement.videoHeight;
@@ -425,7 +456,7 @@ function enableHandTracking(device) {
     });
 
     camera.start().then(() => {
-        // Quando il video è pronto → ridimensiona davvero il canvas
+        // Quando il video è pronto: ridimensiona davvero il canvas
         videoElement.addEventListener('loadedmetadata', resizeCanvas);
         videoElement.addEventListener('resize', resizeCanvas);
     });
